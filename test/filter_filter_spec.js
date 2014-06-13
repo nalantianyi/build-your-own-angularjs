@@ -1,13 +1,21 @@
 /* jshint globalstrict: true */
-/* global filter: false, parse: false */
+/* global publishExternalAPI: false, createInjector: false */
 'use strict';
 
 describe("filter filter", function() {
 
-  it('is available', function() {
-    expect(filter('filter')).toBeDefined();
+  var parse;
+
+  beforeEach(function() {
+    publishExternalAPI();
+    parse = createInjector(['ng']).get('$parse');
   });
 
+  it('is available', function() {
+    var injector = createInjector(['ng']);
+    expect(injector.has('filterFilter')).toBe(true);
+  });
+  
   it('can filter an array with a predicate function', function() {
     var fn = parse('[1, 2, 3, 4] | filter:isOdd');
     var scope = {
@@ -274,6 +282,5 @@ describe("filter filter", function() {
       {name: "Jo"}
     ]);
   });
-
 
 });

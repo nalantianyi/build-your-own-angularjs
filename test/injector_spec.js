@@ -868,5 +868,5 @@ describe('injector', function() {
 
     expect(injector.get('aValue').decoratedKey).toBe(42);
   });
-
+  
 });
