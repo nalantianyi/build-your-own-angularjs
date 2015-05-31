@@ -181,6 +181,7 @@ function $CompileProvider($provide) {
       return function publicLinkFn(scope) {
         $compileNodes.data('$scope', scope);
         compositeLinkFn(scope, $compileNodes);
+        return $compileNodes;
       };
     }
 
@@ -435,6 +436,7 @@ function $CompileProvider($provide) {
       var newIsolateScopeDirective = previousCompileContext.newIsolateScopeDirective;
       var templateDirective = previousCompileContext.templateDirective;
       var controllerDirectives = previousCompileContext.controllerDirectives;
+      var childTranscludeFn, hasTranscludeDirective;
 
       function getControllers(require, $element) {
         if (_.isArray(require)) {
@@ -515,6 +517,15 @@ function $CompileProvider($provide) {
         if (directive.controller) {
           controllerDirectives = controllerDirectives || {};
           controllerDirectives[directive.name] = directive;
+        }
+        if (directive.transclude) {
+          if (hasTranscludeDirective) {
+            throw 'Multiple directives asking for transclude';
+          }
+          hasTranscludeDirective = true;
+          var $transcludedNodes = $compileNode.clone().contents();
+          childTranscludeFn = compile($transcludedNodes);
+          $compileNode.empty();
         }
         if (directive.template) {
           if (templateDirective) {
@@ -619,7 +630,8 @@ function $CompileProvider($provide) {
             linkFn.isolateScope ? isolateScope : scope,
             $element,
             attrs,
-            linkFn.require && getControllers(linkFn.require, $element)
+            linkFn.require && getControllers(linkFn.require, $element),
+            childTranscludeFn
           );
         });
         if (childLinkFn) {
@@ -634,7 +646,8 @@ function $CompileProvider($provide) {
             linkFn.isolateScope ? isolateScope : scope,
             $element,
             attrs,
-            linkFn.require && getControllers(linkFn.require, $element)
+            linkFn.require && getControllers(linkFn.require, $element),
+            childTranscludeFn
           );
         });
       }
