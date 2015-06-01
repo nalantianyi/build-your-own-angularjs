@@ -610,6 +610,7 @@ function $CompileProvider($provide) {
             var locals = {
               $scope: directive === newIsolateScopeDirective ? isolateScope : scope,
               $element: $element,
+              $transclude: scopeBoundTranscludeFn,
               $attrs: attrs
             };
             var controllerName = directive.controller;
