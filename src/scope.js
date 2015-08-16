@@ -351,6 +351,7 @@ Scope.prototype.$destroy = function() {
     }
   }
   this.$$watchers = null;
+  this.$$listeners = {};
 };
 
 Scope.prototype.$on = function(eventName, listener) {
